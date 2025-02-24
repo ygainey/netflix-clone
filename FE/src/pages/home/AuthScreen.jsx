@@ -1,5 +1,3 @@
-
-
 function AuthScreen() {
   return (
     <div>AuthScreen</div>
