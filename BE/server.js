@@ -1,5 +1,6 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 import authroutes from './routes/auth.route.js'
 import movieroutes from './routes/movie.route.js'
@@ -12,6 +13,13 @@ import { connectDB } from './config/db.js'
 
 const app = express()
 const PORT = ENV_VARS.PORT
+
+app.use(cors({
+    origin: ['http://127.0.0.1:5173', 'http://localhost:5173', 'http://localhost:5173/'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
 
 app.use(express.json())
 app.use(cookieParser())
