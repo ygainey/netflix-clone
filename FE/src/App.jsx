@@ -13,11 +13,11 @@ import SearchHistoryPage from "./pages/SearchHistoryPage"
 import NotFoundPage from "./pages/404"
 
 function App() {
-	const { user, isCheckingAuth, authCheck } = useAuthStore()
+	const { user, isCheckingAuth, checkLocalAuth } = useAuthStore();
 
 	useEffect(() => {
-		authCheck()
-	}, [authCheck])
+		checkLocalAuth();
+	}, [checkLocalAuth]);
 
 	if (isCheckingAuth) {
 		return (

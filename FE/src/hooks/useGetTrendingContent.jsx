@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react"
 import { useContentStore } from "../store/content"
 import axios from "axios"
-
-// Get values from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const API_PATH = import.meta.env.VITE_API_PATH || '/api/v1';
+import { API_CONFIG } from '../config'; // Import the config
 
 // Create configured axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_CONFIG.BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -25,7 +22,7 @@ const useGetTrendingContent = () => {
 		const getTrendingContent = async () => {
 			try {
 				setIsLoading(true)
-				const res = await api.get(`${API_PATH}/${contentType}/trending`)
+				const res = await api.get(`${API_CONFIG.API_PATH}/${contentType}/trending`)
 				setTrendingContent(res.data.content)
 				setError(null)
 			} catch (err) {

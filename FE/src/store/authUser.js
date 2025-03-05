@@ -1,14 +1,10 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 import { create } from "zustand";
+import { API_CONFIG } from '../config'; // Make sure to create this config file
 
-// Get values from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const API_PATH = import.meta.env.VITE_API_PATH || '/api/v1';
-
-// Create configured axios instance for auth requests
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_CONFIG.BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json"
@@ -26,7 +22,7 @@ export const useAuthStore = create((set) => ({
 		try {
 			console.log("Sending signup data:", credentials);
 			
-			const response = await api.post(`${API_PATH}/auth/signup`, credentials);
+			const response = await api.post(`${API_CONFIG.API_PATH}/auth/signup`, credentials);
 
 			set({ user: response.data.user, isSigningUp: false });
 			toast.success("Account created successfully");
@@ -38,35 +34,46 @@ export const useAuthStore = create((set) => ({
 	login: async (credentials) => {
 		set({ isLoggingIn: true });
 		try {
-			const response = await api.post(`${API_PATH}/auth/login`, credentials);
-			set({ user: response.data.user, isLoggingIn: false });
-			toast.success("Logged in successfully");
+		  const response = await api.post(`${API_CONFIG.API_PATH}/auth/login`, credentials);
+		  set({ user: response.data.user, isLoggingIn: false });
+		  
+		  // Save user to localStorage for persistence
+		  localStorage.setItem('user', JSON.stringify(response.data.user));
+		  
+		  toast.success("Logged in successfully");
 		} catch (error) {
-			set({ isLoggingIn: false, user: null });
-			toast.error(error.response?.data?.message || "Login failed");
+		  set({ isLoggingIn: false, user: null });
+		  toast.error(error.response?.data?.message || "Login failed");
 		}
 	},
 	logout: async () => {
 		set({ isLoggingOut: true });
 		try {
-			await api.post(`${API_PATH}/auth/logout`);
+			await api.post(`${API_CONFIG.API_PATH}/auth/logout`);
 			set({ user: null, isLoggingOut: false });
+			
+			// Remove user from localStorage
+			localStorage.removeItem('user');
+			
 			toast.success("Logged out successfully");
 		} catch (error) {
 			set({ isLoggingOut: false });
 			toast.error(error.response?.data?.message || "Logout failed");
 		}
 	},
-	authCheck: async () => {
+	// Replace authCheck with a simple localStorage check
+	checkLocalAuth: () => {
 		set({ isCheckingAuth: true });
 		try {
-			const response = await api.get(`${API_PATH}/auth/authCheck`);
-			set({ user: response.data.user, isCheckingAuth: false });
-		} catch (error) {
-			set({ isCheckingAuth: false, user: null });
-			if (error.response && error.response.status !== 401) {
-				toast.error(error.response?.data?.message || "An error occurred");
+			const storedUser = localStorage.getItem('user');
+			if (storedUser) {
+				set({ user: JSON.parse(storedUser), isCheckingAuth: false });
+			} else {
+				set({ user: null, isCheckingAuth: false });
 			}
+		} catch (error) {
+			console.error("Error checking local auth:", error);
+			set({ isCheckingAuth: false, user: null });
 		}
 	},
 }));
