@@ -4,7 +4,7 @@ import { fetchFromTMDB } from "../services/tmdb.service.js"
 export async function searchPerson(req, res) {
     const { query } = req.params
     try {
-        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/person?query=${query}&language=en-US`)
+        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/person?query=${query}&include_adult=false&language=en-US&page=1`)
 
         if (data.results.length === 0) {
             return res.status(404).send(null)
@@ -33,7 +33,7 @@ export async function searchPerson(req, res) {
 export async function searchMovie(req, res) {
     const { query } = req.params
     try {
-        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/movie?query=${query}&language=en-US`)
+        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`)
 
         if (data.results.length === 0) {
             return res.status(404).send(null)
@@ -62,7 +62,7 @@ export async function searchMovie(req, res) {
 export async function searchTV(req, res) {
     const { query } = req.params
     try {
-        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/tv?query=${query}&language=en-US`)
+        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/search/tv?query=${query}&include_adult=false&language=en-US&page=1`)
 
         if (data.results.length === 0) {
             return res.status(404).send(null)
